@@ -1,4 +1,8 @@
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { id, answer } = req.body;
 
   if (!id || !answer) {
@@ -14,14 +18,14 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         id: Number(id),
         fields: {
-          UF_CRM_1744654954464: answer
+          UF_CRM_1744654954464: answer,
         }
-      })
+      }),
     });
 
-    const result = await response.json();
-    res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json({ error: 'Bitrix request failed', details: err.message });
+    const data = await response.json();
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({ error: 'Something went wrong', details: error.message });
   }
 }
