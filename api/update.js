@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { id, answer } = req.query; // теперь читаем из query
+  const { id, answer } = req.body;
 
   if (!id || !answer) {
     return res.status(400).json({ error: 'Missing id or answer' });
@@ -10,18 +10,20 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(bitrixWebhook, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         id: Number(id),
         fields: {
-          'UF_CRM_1744654954464': answer
-        }
-      })
+          UF_CRM_1744654954464: answer,
+        },
+      }),
     });
 
     const result = await response.json();
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ error: 'Server error', details: error.message });
+    res.status(500).json({ error: 'Request to Bitrix failed', details: error.message });
   }
 }
