@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { id, answer } = req.query;
+  const { id, answer } = req.body;
 
   if (!id || !answer) {
     return res.status(400).json({ error: 'Missing id or answer' });
