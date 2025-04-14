@@ -1,13 +1,6 @@
 export default async function handler(req, res) {
-  // Проверка метода запроса
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  const { id, answer } = req.query; // теперь читаем из query
 
-  // Получаем данные из тела запроса
-  const { id, answer } = req.body;
-
-  // Проверяем наличие необходимых параметров
   if (!id || !answer) {
     return res.status(400).json({ error: 'Missing id or answer' });
   }
@@ -17,20 +10,18 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(bitrixWebhook, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id: Number(id),
         fields: {
-          UF_CRM_1744654954464: answer
+          'UF_CRM_1744654954464': answer
         }
       })
     });
 
     const result = await response.json();
-    return res.status(200).json(result);
+    res.status(200).json(result);
   } catch (error) {
-    return res.status(500).json({ error: 'Something went wrong', details: error.message });
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 }
